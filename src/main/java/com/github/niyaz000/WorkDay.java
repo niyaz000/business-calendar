@@ -3,34 +3,40 @@ package com.github.niyaz000;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 public abstract class WorkDay {
 
-  private final LocalTime startTime;
+  private final List<BusinessHourSlot> businessHourSlots;
 
-  private final LocalTime endTime;
+  public WorkDay(List<BusinessHourSlot> businessHourSlots,
+                 DayOfWeek day) {
+    this.businessHourSlots = businessHourSlots;
+    this.day = day;
+  }
 
   private final DayOfWeek day;
 
-  public WorkDay(LocalTime startTime,
-                 LocalTime endTime,
-                 DayOfWeek day) {
-    this.startTime = startTime;
-    this.endTime = endTime;
-    this.day = day;
-  }
 
   public DayOfWeek getDay() {
     return day;
   }
 
   public Duration duration() {
-    return Duration.ofNanos(endTime.toNanoOfDay() - startTime.toNanoOfDay()).truncatedTo(ChronoUnit.SECONDS);
+    var seconds = businessHourSlots
+            .stream()
+            .map(BusinessHourSlot::duration)
+            .mapToLong(Duration::toSeconds)
+            .summaryStatistics()
+            .getSum();
+
+    return Duration.ofSeconds(seconds);
   }
 
   public boolean isWithinWorkDay(LocalTime time) {
-    return startTime.compareTo(time) >= 0 && endTime.compareTo(time) <= 0;
+    return businessHourSlots
+            .stream()
+            .anyMatch(businessHourSlot -> businessHourSlot.isWithinSlot(time));
   }
 
   public boolean isOutsideWorkDay(LocalTime time) {
@@ -38,15 +44,25 @@ public abstract class WorkDay {
   }
 
   public Duration timeElapsed(LocalTime dateTime) {
-    return duration(startTime, dateTime);
+//    var businessHourSlot = nextBusinessHourSlot(time);
+    return Duration.ofSeconds(0);
   }
 
   public Duration timeRemaining(LocalTime dateTime) {
-    return duration(dateTime, endTime);
+    return Duration.ofSeconds(0);
+//    return duration(dateTime, endTime);
   }
 
   private static Duration duration(LocalTime start,
                                    LocalTime end) {
     return Duration.ofSeconds(end.toSecondOfDay() - start.toSecondOfDay());
+  }
+
+  private BusinessHourSlot nextBusinessHourSlot(LocalTime time) {
+    return businessHourSlots
+            .stream()
+            .filter(businessHourSlot -> businessHourSlot.isWithinSlot(time))
+            .findFirst()
+            .orElse(new BusinessHourSlot(null, null));
   }
 }
