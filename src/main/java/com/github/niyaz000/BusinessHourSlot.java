@@ -50,13 +50,19 @@ public final class BusinessHourSlot {
   }
 
   @NotNull
-  public Duration timeElapsed(LocalTime dateTime) {
-    return duration(startTime, dateTime);
+  public Duration timeElapsed(LocalTime time) {
+    if (isOutsideSlot(time)) {
+      return Duration.ofSeconds(0);
+    }
+    return duration(startTime, time);
   }
 
   @NotNull
-  public Duration timeRemaining(LocalTime dateTime) {
-    return duration(dateTime, endTime);
+  public Duration timeRemaining(LocalTime time) {
+    if (isOutsideSlot(time)) {
+      return Duration.ofSeconds(0);
+    }
+    return duration(time, endTime);
   }
 
   @NotNull

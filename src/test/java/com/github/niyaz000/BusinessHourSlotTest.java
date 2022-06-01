@@ -22,7 +22,7 @@ public class BusinessHourSlotTest {
   }
 
   @Test
-  void test2() {
+  void test_duration() {
     var b = new BusinessHourSlot(LocalTime.of(10, 30, 30), LocalTime.of(10, 40, 30));
     Assertions.assertThat(b.duration().toSeconds()).isEqualTo(600);
 
@@ -60,12 +60,16 @@ public class BusinessHourSlotTest {
 
   @Test
   void test_timeElapsed() {
+
     var b = new BusinessHourSlot(LocalTime.of(10, 30, 30, 1234), LocalTime.of(10, 40, 30, 12345));
     Assertions.assertThat(b.timeElapsed(LocalTime.of(10, 30, 30)).toSeconds()).isZero();
 
     Assertions.assertThat(b.timeElapsed(LocalTime.of(10, 40, 30)).toSeconds()).isEqualTo(600);
 
     Assertions.assertThat(b.timeElapsed(LocalTime.of(10, 33, 30)).toSeconds()).isEqualTo(180);
+
+    Assertions.assertThat(b.timeElapsed(LocalTime.of(10, 29, 30)).toSeconds()).isZero();
+    Assertions.assertThat(b.timeElapsed(LocalTime.of(10, 41, 30)).toSeconds()).isZero();
 
   }
 
@@ -78,6 +82,8 @@ public class BusinessHourSlotTest {
 
     Assertions.assertThat(b.timeRemaining(LocalTime.of(10, 33, 30)).toSeconds()).isEqualTo(420);
 
+    Assertions.assertThat(b.timeRemaining(LocalTime.of(10, 29, 30)).toSeconds()).isZero();
+    Assertions.assertThat(b.timeRemaining(LocalTime.of(10, 41, 30)).toSeconds()).isZero();
   }
 
   @Test
