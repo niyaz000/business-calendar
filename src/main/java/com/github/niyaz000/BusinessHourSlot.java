@@ -42,7 +42,7 @@ public final class BusinessHourSlot {
   }
 
   public boolean isWithinSlot(LocalTime time) {
-    return startTime.compareTo(time) >= 0 && endTime.compareTo(time) <= 0;
+    return startTime.compareTo(time) <= 0 && endTime.compareTo(time) >= 0;
   }
 
   public boolean isOutsideSlot(LocalTime time) {
