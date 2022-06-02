@@ -3,25 +3,47 @@ package com.github.niyaz000;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
 
-public abstract class WorkDay {
+public class WorkDay {
 
   private final List<BusinessHourSlot> businessHourSlots;
 
-  public WorkDay(List<BusinessHourSlot> businessHourSlots,
-                 DayOfWeek day) {
-    this.businessHourSlots = businessHourSlots;
+  private final DayOfWeek day;
+
+  public WorkDay(@NotNull List<BusinessHourSlot> businessHourSlots,
+                 @NotNull DayOfWeek day) {
+    Objects.requireNonNull(businessHourSlots, "businessHourSlots cannot be null or empty");
+    Objects.requireNonNull(day, "day cannot be null");
+    new ArrayList<>(businessHourSlots).sort(Comparator.comparing(BusinessHourSlot::startTime));
+    this.businessHourSlots = Collections.unmodifiableList(businessHourSlots);
+    raiseExceptionOnOverlappingOrEmptySlots();
     this.day = day;
   }
 
-  private final DayOfWeek day;
+  private void raiseExceptionOnOverlappingOrEmptySlots() {
+    if (businessHourSlots.isEmpty()) {
+      throw new IllegalArgumentException("businessHourSlots cannot be null or empty");
+    }
+    for (int i = 0; i < businessHourSlots.size() - 1; ++i) {
+      if (businessHourSlots.get(i).endTime().compareTo(businessHourSlots.get(i + 1).startTime()) >= 0) {
+        throw new IllegalArgumentException("businessHourSlots cannot overlap");
+      }
+    }
+  }
 
-
+  @NotNull
   public DayOfWeek getDay() {
     return day;
   }
 
+  @NotNull
   public Duration duration() {
     var seconds = businessHourSlots
             .stream()
@@ -43,26 +65,28 @@ public abstract class WorkDay {
     return !isWithinWorkDay(time);
   }
 
-  public Duration timeElapsed(LocalTime dateTime) {
-//    var businessHourSlot = nextBusinessHourSlot(time);
-    return Duration.ofSeconds(0);
+  @NotNull
+  public Duration timeElapsed(LocalTime time) {
+    return Duration.ofSeconds(businessHourSlots
+            .stream()
+            .map(businessHourSlot -> businessHourSlot.timeElapsed(time))
+            .mapToLong(Duration::getSeconds)
+            .sum());
   }
 
-  public Duration timeRemaining(LocalTime dateTime) {
-    return Duration.ofSeconds(0);
-//    return duration(dateTime, endTime);
+  @NotNull
+  public Duration timeRemaining(LocalTime time) {
+    return Duration.ofSeconds(businessHourSlots
+            .stream()
+            .map(businessHourSlot -> businessHourSlot.timeRemaining(time))
+            .mapToLong(Duration::getSeconds)
+            .sum());
   }
 
-  private static Duration duration(LocalTime start,
-                                   LocalTime end) {
-    return Duration.ofSeconds(end.toSecondOfDay() - start.toSecondOfDay());
-  }
-
-  private BusinessHourSlot nextBusinessHourSlot(LocalTime time) {
+  public Optional<BusinessHourSlot> currentBusinessHourSlot(LocalTime time) {
     return businessHourSlots
             .stream()
             .filter(businessHourSlot -> businessHourSlot.isWithinSlot(time))
-            .findFirst()
-            .orElse(new BusinessHourSlot(null, null));
+            .findFirst();
   }
 }

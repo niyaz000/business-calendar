@@ -8,6 +8,14 @@ import org.jetbrains.annotations.NotNull;
 
 public final class BusinessHourSlot {
 
+  public LocalTime startTime() {
+    return startTime;
+  }
+
+  public LocalTime endTime() {
+    return endTime;
+  }
+
   private final LocalTime startTime;
 
   private final LocalTime endTime;
@@ -87,4 +95,13 @@ public final class BusinessHourSlot {
     result = 31 * result + (endTime != null ? endTime.hashCode() : 0);
     return result;
   }
+
+  public boolean isAfter(BusinessHourSlot slot) {
+    return slot.startTime().compareTo(this.endTime) > 0;
+  }
+
+  public boolean isBefore(BusinessHourSlot slot) {
+    return slot.endTime().compareTo(this.startTime) < 0;
+  }
+
 }
