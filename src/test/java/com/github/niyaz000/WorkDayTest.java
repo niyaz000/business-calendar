@@ -62,4 +62,22 @@ public class WorkDayTest {
     Assertions.assertThat(w.currentBusinessHourSlot(LocalTime.of(10, 29))).isEmpty();
     Assertions.assertThat(w.currentBusinessHourSlot(LocalTime.of(10, 54))).isEmpty();
   }
+
+  @Test
+  void test1_isOutsideWorkDay() {
+    var slot1 = new BusinessHourSlot(LocalTime.of(10, 30), LocalTime.of(10, 45));
+    var slot2 = new BusinessHourSlot(LocalTime.of(10, 50), LocalTime.of(10, 53));
+    var w = new WorkDay(List.of(slot1, slot2), DayOfWeek.MONDAY);
+
+    Assertions.assertThat(w.isOutsideWorkDay(LocalTime.of(10, 30))).isFalse();
+    Assertions.assertThat(w.isOutsideWorkDay(LocalTime.of(10, 31))).isFalse();
+    Assertions.assertThat(w.isOutsideWorkDay(LocalTime.of(10, 45))).isFalse();
+
+    Assertions.assertThat(w.isOutsideWorkDay(LocalTime.of(10, 50))).isFalse();
+    Assertions.assertThat(w.isOutsideWorkDay(LocalTime.of(10, 51))).isFalse();
+    Assertions.assertThat(w.isOutsideWorkDay(LocalTime.of(10, 53))).isFalse();
+
+    Assertions.assertThat(w.isOutsideWorkDay(LocalTime.of(10, 29))).isTrue();
+    Assertions.assertThat(w.isOutsideWorkDay(LocalTime.of(10, 54))).isTrue();
+  }
 }
