@@ -8,31 +8,23 @@ import org.jetbrains.annotations.NotNull;
 
 public final class BusinessHourSlot {
 
-  public LocalTime startTime() {
-    return startTime;
-  }
-
-  public LocalTime endTime() {
-    return endTime;
-  }
-
   private final LocalTime startTime;
 
   private final LocalTime endTime;
-
-  @Override
-  public String toString() {
-    return "BusinessHourSlot{" +
-            "startTime=" + startTime +
-            ", endTime=" + endTime +
-            '}';
-  }
 
   public BusinessHourSlot(@NotNull LocalTime startTime,
                           @NotNull LocalTime endTime) {
     validate(startTime, endTime);
     this.startTime = startTime.truncatedTo(ChronoUnit.SECONDS);
     this.endTime = endTime.truncatedTo(ChronoUnit.SECONDS);
+  }
+
+  public LocalTime startTime() {
+    return startTime;
+  }
+
+  public LocalTime endTime() {
+    return endTime;
   }
 
   private void validate(LocalTime startTime,
@@ -96,12 +88,20 @@ public final class BusinessHourSlot {
     return result;
   }
 
-  public boolean isAfter(BusinessHourSlot slot) {
-    return slot.startTime().compareTo(this.endTime) > 0;
+  @Override
+  public String toString() {
+    return "BusinessHourSlot{" +
+            "startTime=" + startTime +
+            ", endTime=" + endTime +
+            '}';
   }
 
-  public boolean isBefore(BusinessHourSlot slot) {
-    return slot.endTime().compareTo(this.startTime) < 0;
+  public boolean isAfter(LocalTime time) {
+    return time.compareTo(this.endTime) > 0;
+  }
+
+  public boolean isBefore(LocalTime time) {
+    return time.compareTo(startTime) < 0;
   }
 
 }

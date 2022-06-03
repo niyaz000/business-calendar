@@ -21,8 +21,9 @@ public class WorkDay {
                  @NotNull DayOfWeek day) {
     Objects.requireNonNull(businessHourSlots, "businessHourSlots cannot be null or empty");
     Objects.requireNonNull(day, "day cannot be null");
-    new ArrayList<>(businessHourSlots).sort(Comparator.comparing(BusinessHourSlot::startTime));
-    this.businessHourSlots = Collections.unmodifiableList(businessHourSlots);
+    var slots = new ArrayList<>(businessHourSlots);
+    slots.sort(Comparator.comparing(BusinessHourSlot::startTime));
+    this.businessHourSlots = Collections.unmodifiableList(slots);
     raiseExceptionOnOverlappingOrEmptySlots();
     this.day = day;
   }
@@ -67,11 +68,21 @@ public class WorkDay {
 
   @NotNull
   public Duration timeElapsed(LocalTime time) {
-    return Duration.ofSeconds(businessHourSlots
+
+    var durationInSeconds = businessHourSlots
             .stream()
-            .map(businessHourSlot -> businessHourSlot.timeElapsed(time))
+            .filter(slot -> slot.isAfter(time))
+            .map(BusinessHourSlot::duration)
             .mapToLong(Duration::getSeconds)
-            .sum());
+            .sum();
+
+    durationInSeconds += businessHourSlots
+            .stream()
+            .filter(slot -> slot.isWithinSlot(time))
+            .mapToLong(slot -> slot.timeElapsed(time).getSeconds()).sum();
+
+    return Duration.ofSeconds(durationInSeconds);
+
   }
 
   @NotNull
@@ -87,6 +98,13 @@ public class WorkDay {
     return businessHourSlots
             .stream()
             .filter(businessHourSlot -> businessHourSlot.isWithinSlot(time))
+            .findFirst();
+  }
+
+  public Optional<BusinessHourSlot> nextBusinessHourSlot(LocalTime time) {
+    return businessHourSlots
+            .stream()
+            .filter(businessHourSlot -> businessHourSlot.isAfter(time))
             .findFirst();
   }
 }

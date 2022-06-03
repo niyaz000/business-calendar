@@ -80,4 +80,13 @@ public class WorkDayTest {
     Assertions.assertThat(w.isOutsideWorkDay(LocalTime.of(10, 29))).isTrue();
     Assertions.assertThat(w.isOutsideWorkDay(LocalTime.of(10, 54))).isTrue();
   }
+
+  @Test
+  void test_timeElapsed() {
+    var slot1 = new BusinessHourSlot(LocalTime.of(10, 30), LocalTime.of(10, 45));
+    var slot2 = new BusinessHourSlot(LocalTime.of(10, 50), LocalTime.of(10, 53));
+    var w = new WorkDay(List.of(slot1, slot2), DayOfWeek.MONDAY);
+
+  }
+
 }
