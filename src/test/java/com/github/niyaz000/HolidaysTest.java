@@ -47,4 +47,27 @@ class HolidaysTest {
     Assertions.assertThat(holidays.isHoliday(LocalDateTime.parse("2022-05-14T10:30:22"))).isFalse();
     Assertions.assertThat(holidays.isHoliday(LocalDateTime.parse("2022-05-14T13:30:46"))).isFalse();
   }
+
+  @Test
+  void test_toString() {
+    var holidays = new Holidays(List.of(Holiday.withEntireDayOff(LocalDate.of(2022, 5, 11)),
+            Holiday.withOffTimeBetween(LocalDateTime.parse("2022-05-14T10:30:23"), LocalDateTime.parse("2022-05-14T13:30:45"))));
+
+    Assertions.assertThat(holidays.toString()).isEqualTo("Holidays{holidays=[Holiday{startTime=2022-05-11T00:00, endTime=2022-05-11T23:59:59}, Holiday{startTime=2022-05-14T10:30:23, endTime=2022-05-14T13:30:45}]}");
+  }
+
+  @Test
+  void test_eq_hcode() {
+    var holidays1 = new Holidays(List.of(Holiday.withEntireDayOff(LocalDate.of(2022, 5, 11)),
+            Holiday.withOffTimeBetween(LocalDateTime.parse("2022-05-14T10:30:23"), LocalDateTime.parse("2022-05-14T13:30:45"))));
+
+    var holidays2 = new Holidays(List.of(Holiday.withEntireDayOff(LocalDate.of(2022, 5, 11)),
+            Holiday.withOffTimeBetween(LocalDateTime.parse("2022-05-14T10:30:23"), LocalDateTime.parse("2022-05-14T13:30:45"))));
+
+    var holidays3 = new Holidays(List.of(Holiday.withEntireDayOff(LocalDate.of(2022, 5, 12)),
+            Holiday.withOffTimeBetween(LocalDateTime.parse("2022-05-14T10:30:23"), LocalDateTime.parse("2022-05-14T13:30:45"))));
+
+    Assertions.assertThat(holidays1.equals(holidays2)).isTrue();
+    Assertions.assertThat(holidays1.equals(holidays3)).isFalse();
+  }
 }

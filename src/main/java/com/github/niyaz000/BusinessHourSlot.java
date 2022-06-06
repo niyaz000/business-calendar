@@ -78,7 +78,7 @@ public final class BusinessHourSlot {
 
     BusinessHourSlot that = (BusinessHourSlot) o;
 
-    return Objects.equals(endTime, that.endTime);
+    return Objects.equals(endTime, that.endTime) && Objects.equals(startTime, that.startTime);
   }
 
   @Override

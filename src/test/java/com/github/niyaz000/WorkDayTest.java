@@ -2,6 +2,8 @@ package com.github.niyaz000;
 
 import java.time.DayOfWeek;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
@@ -88,4 +90,30 @@ public class WorkDayTest {
     var w = new WorkDay(List.of(slot1, slot2), DayOfWeek.MONDAY);
   }
 
+  @Test
+  void test_toString() {
+    var slot1 = new BusinessHourSlot(LocalTime.of(10, 30), LocalTime.of(10, 45));
+    var slot2 = new BusinessHourSlot(LocalTime.of(10, 50), LocalTime.of(10, 53));
+    var w1 = new WorkDay(List.of(slot1, slot2), DayOfWeek.MONDAY);
+
+    Assertions.assertThat(w1.toString()).isEqualTo("WorkDay{businessHourSlots=[BusinessHourSlot{startTime=10:30, endTime=10:45}, BusinessHourSlot{startTime=10:50, endTime=10:53}], day=MONDAY}");
+  }
+
+  @Test
+  void test_eq_hcode() {
+    var slot1 = new BusinessHourSlot(LocalTime.of(10, 30), LocalTime.of(10, 45));
+    var slot2 = new BusinessHourSlot(LocalTime.of(10, 50), LocalTime.of(10, 53));
+    var w1 = new WorkDay(List.of(slot1, slot2), DayOfWeek.MONDAY);
+
+    var slot3 = new BusinessHourSlot(LocalTime.of(10, 30), LocalTime.of(10, 45));
+    var slot4 = new BusinessHourSlot(LocalTime.of(10, 50), LocalTime.of(10, 53));
+    var w2 = new WorkDay(List.of(slot3, slot4), DayOfWeek.MONDAY);
+
+    var slot5 = new BusinessHourSlot(LocalTime.of(10, 30), LocalTime.of(10, 45));
+    var slot6 = new BusinessHourSlot(LocalTime.of(10, 51), LocalTime.of(10, 53));
+    var w3 = new WorkDay(List.of(slot5, slot6), DayOfWeek.MONDAY);
+
+    Assertions.assertThat(w1.equals(w2)).isTrue();
+    Assertions.assertThat(w1.equals(w3)).isFalse();
+  }
 }

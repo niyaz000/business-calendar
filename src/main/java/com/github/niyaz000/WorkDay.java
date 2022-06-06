@@ -13,8 +13,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class WorkDay {
 
+  @NotNull
   private final List<BusinessHourSlot> businessHourSlots;
 
+  @NotNull
   private final DayOfWeek day;
 
   public WorkDay(@NotNull List<BusinessHourSlot> businessHourSlots,
@@ -106,5 +108,32 @@ public class WorkDay {
             .stream()
             .filter(businessHourSlot -> businessHourSlot.isAfter(time))
             .findFirst();
+  }
+
+  @Override
+  public String toString() {
+    return "WorkDay{" +
+            "businessHourSlots=" + businessHourSlots +
+            ", day=" + day +
+            '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    WorkDay workDay = (WorkDay) o;
+
+    if (!Objects.equals(businessHourSlots, workDay.businessHourSlots))
+      return false;
+    return day == workDay.day;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = businessHourSlots.hashCode();
+    result = 31 * result + day.hashCode();
+    return result;
   }
 }

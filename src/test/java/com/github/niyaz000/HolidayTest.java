@@ -89,4 +89,20 @@ public class HolidayTest {
     Assertions.assertThat(h.timeRemaining(LocalDateTime.parse("2022-05-10T10:35:00"))).isEqualTo(Duration.ofMinutes(5).plusSeconds(45));
     Assertions.assertThat(h.timeRemaining(LocalDateTime.parse("2022-05-10T10:40:45"))).isEqualTo(Duration.ZERO);
   }
+
+  @Test
+  void test_toString() {
+    var h = Holiday.withEntireDayOff(LocalDate.of(2022, 5, 10));
+    Assertions.assertThat(h.toString()).isEqualTo("Holiday{startTime=2022-05-10T00:00, endTime=2022-05-10T23:59:59}");
+  }
+
+  @Test
+  void test_eq_hcode() {
+    var h1 = Holiday.withEntireDayOff(LocalDate.of(2022, 5, 10));
+    var h2 = Holiday.withEntireDayOff(LocalDate.of(2022, 5, 10));
+    var h3 = Holiday.withEntireDayOff(LocalDate.of(2022, 5, 11));
+
+    Assertions.assertThat(h1.equals(h2)).isTrue();
+    Assertions.assertThat(h1.equals(h3)).isFalse();
+  }
 }

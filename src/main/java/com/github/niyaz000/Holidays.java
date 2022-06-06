@@ -8,9 +8,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 public final class Holidays {
 
+  @NotNull
   private final List<Holiday> holidays;
 
   public Holidays(Collection<Holiday> holidays) {
@@ -41,4 +43,25 @@ public final class Holidays {
     return holidays;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Holidays holidays1 = (Holidays) o;
+
+    return Objects.equals(holidays, holidays1.holidays);
+  }
+
+  @Override
+  public String toString() {
+    return "Holidays{" +
+            "holidays=" + holidays +
+            '}';
+  }
+
+  @Override
+  public int hashCode() {
+    return holidays.hashCode();
+  }
 }

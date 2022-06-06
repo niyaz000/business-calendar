@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 public class Holiday {
@@ -17,8 +18,10 @@ public class Holiday {
     return endTime;
   }
 
+  @NotNull
   private final LocalDateTime startTime;
 
+  @NotNull
   private final LocalDateTime endTime;
 
   public static Holiday withEntireDayOff(LocalDate date) {
@@ -80,5 +83,31 @@ public class Holiday {
   private static Duration duration(LocalDateTime start,
                                    LocalDateTime end) {
     return Duration.ofSeconds(end.toEpochSecond(ZoneOffset.UTC) - start.toEpochSecond(ZoneOffset.UTC)).truncatedTo(ChronoUnit.SECONDS);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Holiday holiday = (Holiday) o;
+
+    if (!Objects.equals(startTime, holiday.startTime)) return false;
+    return Objects.equals(endTime, holiday.endTime);
+  }
+
+  @Override
+  public String toString() {
+    return "Holiday{" +
+            "startTime=" + startTime +
+            ", endTime=" + endTime +
+            '}';
+  }
+
+  @Override
+  public int hashCode() {
+    int result = startTime.hashCode();
+    result = 31 * result + endTime.hashCode();
+    return result;
   }
 }
