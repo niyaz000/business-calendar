@@ -83,8 +83,8 @@ public final class BusinessHourSlot {
 
   @Override
   public int hashCode() {
-    int result = startTime != null ? startTime.hashCode() : 0;
-    result = 31 * result + (endTime != null ? endTime.hashCode() : 0);
+    int result = startTime.hashCode();
+    result = 31 * result + endTime.hashCode();
     return result;
   }
 

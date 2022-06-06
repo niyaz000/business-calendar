@@ -39,6 +39,7 @@ public class Holiday {
     this.endTime = end.truncatedTo(ChronoUnit.SECONDS);
   }
 
+  @NotNull
   public Duration duration() {
     return Duration.ofSeconds(endTime.toEpochSecond(ZoneOffset.UTC) - startTime.toEpochSecond(ZoneOffset.UTC));
   }
@@ -47,18 +48,35 @@ public class Holiday {
     return isHoliday(time.atStartOfDay());
   }
 
-  public boolean isHoliday(LocalDateTime time) {
-    return startTime.compareTo(time) >= 0 && endTime.compareTo(time) <= 0;
+  public boolean isHoliday(LocalDateTime dateTime) {
+    return isWithinHoliday(dateTime);
   }
 
+  public boolean isWithinHoliday(LocalDate date) {
+    return isWithinHoliday(date.atStartOfDay());
+  }
+
+  public boolean isWithinHoliday(LocalDateTime dateTime) {
+    return startTime.compareTo(dateTime) <= 0 && endTime.compareTo(dateTime) >= 0;
+  }
+
+  @NotNull
   public Duration timeElapsed(LocalDateTime dateTime) {
-    return duration(startTime, dateTime);
+    if(isWithinHoliday(dateTime)) {
+      return duration(startTime, dateTime);
+    }
+    return Duration.ZERO;
   }
 
+  @NotNull
   public Duration timeRemaining(LocalDateTime dateTime) {
-    return duration(dateTime, endTime);
+    if(isWithinHoliday(dateTime)) {
+      return duration(dateTime, endTime);
+    }
+    return Duration.ZERO;
   }
 
+  @NotNull
   private static Duration duration(LocalDateTime start,
                                    LocalDateTime end) {
     return Duration.ofSeconds(end.toEpochSecond(ZoneOffset.UTC) - start.toEpochSecond(ZoneOffset.UTC)).truncatedTo(ChronoUnit.SECONDS);

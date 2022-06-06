@@ -86,7 +86,6 @@ public class WorkDayTest {
     var slot1 = new BusinessHourSlot(LocalTime.of(10, 30), LocalTime.of(10, 45));
     var slot2 = new BusinessHourSlot(LocalTime.of(10, 50), LocalTime.of(10, 53));
     var w = new WorkDay(List.of(slot1, slot2), DayOfWeek.MONDAY);
-
   }
 
 }
